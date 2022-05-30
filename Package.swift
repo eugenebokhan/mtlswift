@@ -6,14 +6,14 @@ import PackageDescription
 let package = Package(
     name: "mtlswift",
     products: [
-        Product.executable(name: "mtlswift",
-                           targets: ["mtlswift"])
+        .executable(name: "mtlswift",
+                    targets: ["mtlswift"])
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser",
-                 from: "0.0.4"),
+                 .exact("0.0.4")),
         .package(url: "https://github.com/JohnSundell/Files",
-                 from: "4.0.2")
+                 from: "4.2.0")
     ],
     targets: [
         .target(name: "mtlswift",

@@ -37,15 +37,10 @@ public struct MTLKernelEncoder {
         let sourceBuilder = SourceStringBuilder()
         sourceBuilder.begin()
 
-        sourceBuilder.add(line: "\(self.accessLevel.rawValue) class \(self.swiftName) {")
+        sourceBuilder.add(line: "final \(self.accessLevel.rawValue) class \(self.swiftName) {")
         sourceBuilder.blankLine()
         sourceBuilder.pushLevel()
 
-        if let bc = self.branchingConstant {
-            sourceBuilder.add(line: "\(self.accessLevel.rawValue) let \(bc.name): \(bc.type.swiftTypeDelcaration)")
-        }
-
-        sourceBuilder.blankLine()
         sourceBuilder.add(line: "\(self.accessLevel.rawValue) let pipelineState: MTLComputePipelineState")
         sourceBuilder.blankLine()
 
@@ -62,8 +57,8 @@ public struct MTLKernelEncoder {
 
             sourceBuilder.add(line: "let constantValues = MTLFunctionConstantValues()")
             if let bc = self.branchingConstant {
-                sourceBuilder.add(line: "self.\(bc.name) = library.device.supports(feature: .nonUniformThreadgroups)")
-                sourceBuilder.add(line: "constantValues.set(self.\(bc.name), at: \(bc.index))")
+                sourceBuilder.add(line: "let \(bc.name) = library.device.supports(feature: .nonUniformThreadgroups)")
+                sourceBuilder.add(line: "constantValues.set(\(bc.name), at: \(bc.index))")
             }
 
             for constant in self.usedConstants {
@@ -86,18 +81,18 @@ public struct MTLKernelEncoder {
         for (idx, ev) in self.encodingVariants.enumerated() {
             var threadgroupParameterString = ""
             var threadgroupVariableString = ""
-            let threadgroupExpressionString = ", threadgroupSize: _threadgroupSize"
+            let threadgroupExpressionString = ", threadgroupSize: threadgroupSize"
 
             switch ev.threadgroupSize {
             case .provided:
                 threadgroupParameterString = "threadgroupSize: MTLSize, "
-                threadgroupVariableString = "let _threadgroupSize = threadgroupSize"
+                threadgroupVariableString = "let threadgroupSize = threadgroupSize"
             case .max:
-                threadgroupVariableString = "let _threadgroupSize = self.pipelineState.max2dThreadgroupSize"
+                threadgroupVariableString = "let threadgroupSize = self.pipelineState.max2dThreadgroupSize"
             case .executionWidth:
-                threadgroupVariableString = "let _threadgroupSize = self.pipelineState.executionWidthThreadgroupSize"
+                threadgroupVariableString = "let threadgroupSize = self.pipelineState.executionWidthThreadgroupSize"
             case .constant(_, _, _):
-                threadgroupVariableString = "let _threadgroupSize = \(self.swiftName).threadgroupSize\(idx)"
+                threadgroupVariableString = "let threadgroupSize = \(self.swiftName).threadgroupSize\(idx)"
             }
 
             var gridSizeParameterString = ""
@@ -180,9 +175,9 @@ public struct MTLKernelEncoder {
                 case .total(let index, let bytes):
                     sourceBuilder.add(line: "encoder.setThreadgroupMemoryLength(\(bytes), index: \(index))")
                 case .perThread(let index, let bytes):
-                    sourceBuilder.add(line: "encoder.setThreadgroupMemoryLength(_threadgroupSize.width * _threadgroupSize.height * _threadgroupSize.depth * \(bytes), index: \(index))")
+                    sourceBuilder.add(line: "encoder.setThreadgroupMemoryLength(threadgroupSize.width * threadgroupSize.height * threadgroupSize.depth * \(bytes), index: \(index))")
                 case .parameterPerThread(let index, let parameter):
-                    sourceBuilder.add(line: "encoder.setThreadgroupMemoryLength(_threadgroupSize.width * _threadgroupSize.height * _threadgroupSize.depth * \(parameter), index: \(index))")
+                    sourceBuilder.add(line: "encoder.setThreadgroupMemoryLength(threadgroupSize.width * threadgroupSize.height * threadgroupSize.depth * \(parameter), index: \(index))")
                 }
             }
 
@@ -224,16 +219,13 @@ public struct MTLKernelEncoder {
 
             // MARK: Optimal dispatching
             case .optimal(_, parameters: .provided):
-                let bc = self.branchingConstant!
-                sourceBuilder.add(line: "if self.\(bc.name) { encoder.dispatch2d(state: self.pipelineState, exactly: gridSize\(threadgroupExpressionString)) } else { encoder.dispatch2d(state: self.pipelineState, covering: gridSize\(threadgroupExpressionString)) }")
+                sourceBuilder.add(line: "encoder.dispatch3d(state: self.pipelineState, exactlyOrCovering: gridSize\(threadgroupExpressionString))")
             case .optimal(_, parameters: .constant(_, _, _)):
-                let bc = self.branchingConstant!
-                sourceBuilder.add(line: "if self.\(bc.name) { encoder.dispatch2d(state: self.pipelineState, exactly: \(self.swiftName).gridSize\(idx)\(threadgroupExpressionString)) } else { encoder.dispatch2d(state: self.pipelineState, covering: \(self.swiftName).gridSize\(idx)\(threadgroupExpressionString)) }")
+                sourceBuilder.add(line: "encoder.dispatch3d(state: self.pipelineState, exactlyOrCovering: \(self.swiftName).gridSize\(idx)\(threadgroupExpressionString))")
             case .optimal(_, parameters: .over(let argument)):
                 if let targetParameter = self.parameters.first(where: { $0.name == argument }),
                    targetParameter.kind == .texture {
-                    let bc = self.branchingConstant!
-                    sourceBuilder.add(line: "if self.\(bc.name) { encoder.dispatch2d(state: self.pipelineState, exactly: \(targetParameter.name).size\(threadgroupExpressionString)) } else { encoder.dispatch2d(state: self.pipelineState, covering: \(targetParameter.name).size\(threadgroupExpressionString)) }")
+                    sourceBuilder.add(line: "encoder.dispatch3d(state: self.pipelineState, exactlyOrCovering: \(targetParameter.name).size\(threadgroupExpressionString))")
                 } else { print("Could not generate dispatching over parameter \(argument)") }
             }
 
