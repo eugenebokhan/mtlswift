@@ -219,13 +219,13 @@ public struct MTLKernelEncoder {
 
             // MARK: Optimal dispatching
             case .optimal(_, parameters: .provided):
-                sourceBuilder.add(line: "encoder.dispatch3d(state: self.pipelineState, exactlyOrCovering: gridSize\(threadgroupExpressionString))")
+                sourceBuilder.add(line: "encoder.dispatch2d(state: self.pipelineState, exactlyOrCovering: gridSize\(threadgroupExpressionString))")
             case .optimal(_, parameters: .constant(_, _, _)):
-                sourceBuilder.add(line: "encoder.dispatch3d(state: self.pipelineState, exactlyOrCovering: \(self.swiftName).gridSize\(idx)\(threadgroupExpressionString))")
+                sourceBuilder.add(line: "encoder.dispatch2d(state: self.pipelineState, exactlyOrCovering: \(self.swiftName).gridSize\(idx)\(threadgroupExpressionString))")
             case .optimal(_, parameters: .over(let argument)):
                 if let targetParameter = self.parameters.first(where: { $0.name == argument }),
                    targetParameter.kind == .texture {
-                    sourceBuilder.add(line: "encoder.dispatch3d(state: self.pipelineState, exactlyOrCovering: \(targetParameter.name).size\(threadgroupExpressionString))")
+                    sourceBuilder.add(line: "encoder.dispatch2d(state: self.pipelineState, exactlyOrCovering: \(targetParameter.name).size\(threadgroupExpressionString))")
                 } else { print("Could not generate dispatching over parameter \(argument)") }
             }
 
