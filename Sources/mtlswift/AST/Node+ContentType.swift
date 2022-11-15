@@ -81,6 +81,7 @@ public extension ASTNode {
         case ifStmt = "IfStmt"
         case implicitCastExpr = "ImplicitCastExpr"
         case implicitValueInitExpr = "ImplicitValueInitExpr"
+        case importDecl = "ImportDecl"
         case initListExpr = "InitListExpr"
         case injectedClassNameType = "InjectedClassNameType"
         case integerLiteral = "IntegerLiteral"
@@ -163,5 +164,6 @@ public extension ASTNode {
         case varTemplateSpecializationDecl = "VarTemplateSpecializationDecl"
         case whileStmt = "WhileStmt"
         case stmtExpr = "StmtExpr"
+        case undeserializedDeclarations = "<undeserialized declarations>"
     }
 }

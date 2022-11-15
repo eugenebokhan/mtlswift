@@ -22,8 +22,7 @@ public class ASTNode {
     public init(parsingString inputString: String) throws {
         let scanner = StringScanner(string: inputString)
         
-        guard let prefix = scanner.readWord()
-        else { throw Errors.parsingError }
+        let prefix = scanner.readWord() ?? "<undeserialized declarations>"
 
         guard let contentType = ContentType(rawValue: prefix)
         else { throw Errors.contentTypeCreationFailed }
