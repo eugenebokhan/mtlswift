@@ -15,7 +15,7 @@ The user is able to provide multiple paths to the shaders files or folders conta
 mtlswift watch ../shaders_folder/ ../../another_shaders_folder/Shaders.metal
 ```
 
-> WARNING: This tool currently generates encoders for [`Alloy`](https://github.com/s1ddok/Alloy) syntax. We will probably support vanilla Metal code in the future.
+> WARNING: This tool currently generates encoders for [`MetalTools`](https://github.com/computer-graphics-tools/metal-tools) syntax. We will probably support vanilla Metal code in the future.
 
 #### CLI Options
 
@@ -102,11 +102,11 @@ Every custom annotation starts with `mtlswift:`. The program uses this declarati
     
   * `max`
   
-    This parameter sets the pipeline state's [`max2dThreadgroupSize`](https://github.com/s1ddok/Alloy/blob/b82aa3fde347a81eef9551be7ffc28eec2b93bca/Alloy/MTLComputePipelineState%2BThreads.swift#L24).
+    This parameter sets the pipeline state's [`max2dThreadgroupSize`](https://swiftpackageindex.com/computer-graphics-tools/metal-tools/main/documentation/metaltools/metal-swift.module.extension/mtlcomputepipelinestate/max2dthreadgroupsize).
     
   * `executionWidth`
   
-    This parameter sets the pipeline state's [`executionWidthThreadgroupSize`](https://github.com/s1ddok/Alloy/blob/b82aa3fde347a81eef9551be7ffc28eec2b93bca/Alloy/MTLComputePipelineState%2BThreads.swift#L12).
+    This parameter sets the pipeline state's [`executionWidthThreadgroupSize`](https://swiftpackageindex.com/computer-graphics-tools/metal-tools/main/documentation/metaltools/metal-swift.module.extension/mtlcomputepipelinestate/executionwidththreadgroupsize).
     
   * `provided`
   
