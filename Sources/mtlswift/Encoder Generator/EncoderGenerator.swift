@@ -4,8 +4,10 @@ final class EncoderGenerator {
 
     private init() {}
 
-    func generateEncoders(for metalFileURLs: [URL],
-                          output: URL? = nil) throws {
+    func generateEncoders(
+        for metalFileURLs: [URL],
+        output: URL? = nil
+    ) throws {
 
         let builder = SourceStringBuilder()
         var headerIsAdded = false
@@ -18,16 +20,16 @@ final class EncoderGenerator {
                                       .appendingPathComponent("ast")
                                       .appendingPathExtension("dump")
 
-            run(which("rm")!, args: [astPath.path])
+            if FileManager.default.fileExists(atPath: astPath.path) {
+                run(which("rm")!, args: [astPath.path])
+            }
             run(which("touch")!, args: [astPath.path])
             let outputHandle = try FileHandle(forUpdating: astPath)
             let process = Process()
             process.launchPath = which("xcrun")!
             process.arguments = ["-sdk", "iphoneos", "metal",
                                  "-Xclang", "-ast-dump",
-                                 "-E",
-                                 "-Xclang", "-fno-color-diagnostics",
-                                 "-fno-color-diagnostics",
+                                 "-E", "-fno-color-diagnostics",
                                  metalFileURL.path]
             process.standardOutput = outputHandle
             process.launch()
@@ -49,7 +51,7 @@ final class EncoderGenerator {
             let firstLine = lines.first!.extractingLevel
             var currentLevel = firstLine.0
 
-            let topNode = try ASTNode(parsingString: firstLine.1)
+            let topNode = try! ASTNode(parsingString: firstLine.1)
             var node = topNode
 
             var isInsideSystemArea = true

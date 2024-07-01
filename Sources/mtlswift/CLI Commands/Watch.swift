@@ -16,10 +16,14 @@ extension MTLSwift {
         }
 
         func run() throws {
-            let shadersFilesURLs = try MTLSwift.findShadersFiles(at: self.options.inputPaths,
-                                                                 isRecursive: self.options.isRecursive)
-            let ignoreURLs = try MTLSwift.findShadersFiles(at: self.options.ignoreInputPaths,
-                                                           isRecursive: self.options.isRecursive)
+            let shadersFilesURLs = try MTLSwift.findShadersFiles(
+                at: self.options.inputPaths,
+                isRecursive: self.options.isRecursive
+            )
+            let ignoreURLs = try MTLSwift.findShadersFiles(
+                at: self.options.ignoreInputPaths,
+                isRecursive: self.options.isRecursive
+            )
 
             let shadersFilesFilteredURLs = Array(shadersFilesURLs.subtracting(ignoreURLs))
             for shadersFileURL in shadersFilesFilteredURLs {

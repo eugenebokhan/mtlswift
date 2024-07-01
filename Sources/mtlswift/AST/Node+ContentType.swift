@@ -132,6 +132,7 @@ public extension ASTNode {
         case pureAttr = "PureAttr"
         case qualType = "QualType"
         case recordType = "RecordType"
+        case recoveryExpr = "RecoveryExpr"
         case returnStmt = "ReturnStmt"
         case sizeOfPackExpr = "SizeOfPackExpr"
         case staticAssertDecl = "StaticAssertDecl"
